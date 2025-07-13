@@ -1,20 +1,50 @@
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as ReduxProvider } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
+import * as Location from 'expo-location';
+import { store } from './src/store/store';
+import RootNavigator from './src/navigation/RootNavigator';
+import { theme } from './src/utils/theme';
+import { initializeFirebase } from './src/services/firebase/config';
 
-export default function App() {
+// Inicializar Firebase
+initializeFirebase();
+
+const App = () => {
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+      }
+    } catch (error) {
+      console.error('Error requesting location permission:', error);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <ReduxProvider store={store}>
+        <PaperProvider theme={theme}>
+          <NavigationContainer>
+            <StatusBar 
+              style="dark" 
+              translucent={Platform.OS === 'android'}
+            />
+            <RootNavigator />
+          </NavigationContainer>
+        </PaperProvider>
+      </ReduxProvider>
+    </SafeAreaProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
