@@ -12,6 +12,9 @@ import CartScreen from '../screens/customer/CartScreen';
 import RestaurantDetailScreen from '../screens/customer/RestaurantDetailScreen';
 import OrderTrackingScreen from '../screens/customer/OrderTrackingScreen';
 import CheckoutScreen from '../screens/customer/CheckoutScreen';
+import TransferenciaScreen from '../screens/customer/TransferenciaScreen';
+import CustomerChatScreen from '../screens/customer/CustomerChatScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,13 +26,29 @@ const HomeStack = () => (
     <Stack.Screen name="Cart" component={CartScreen} />
     <Stack.Screen name="Checkout" component={CheckoutScreen} />
     <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
+    <Stack.Screen
+      name="Transferencia"
+      component={TransferenciaScreen}
+      options={{ title: 'Transferencia Bancaria' }}
+    />
+    <Stack.Screen
+      name="CustomerChatScreen"
+      component={CustomerChatScreen}
+      options={{ title: 'Chat con el repartidor' }}
+    />
   </Stack.Navigator>
+
 );
 
 const OrdersStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="OrdersMain" component={OrdersScreen} />
     <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
+    <Stack.Screen
+      name="CustomerChatScreen"
+      component={CustomerChatScreen}
+
+    />
   </Stack.Navigator>
 );
 
@@ -52,32 +71,32 @@ const CustomerNavigator = () => {
         },
       }}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeStack}
         options={{
           tabBarLabel: 'Inicio',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🏠</Text>,
         }}
       />
-      <Tab.Screen 
-        name="Restaurants" 
+      <Tab.Screen
+        name="Restaurants"
         component={RestaurantsScreen}
         options={{
           tabBarLabel: 'Restaurantes',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🍽️</Text>,
         }}
       />
-      <Tab.Screen 
-        name="Orders" 
+      <Tab.Screen
+        name="Orders"
         component={OrdersStack}
         options={{
           tabBarLabel: 'Pedidos',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📦</Text>,
         }}
       />
-      <Tab.Screen 
-        name="Profile" 
+      <Tab.Screen
+        name="Profile"
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Perfil',

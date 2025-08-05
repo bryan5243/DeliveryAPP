@@ -23,12 +23,12 @@ const OrderTrackingScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
-  
+
   const { orderId } = route.params;
   const currentOrder = useSelector(selectCurrentOrder);
   const orders = useSelector(selectOrders);
   const [simulationInterval, setSimulationInterval] = useState(null);
-  
+
   // Encontrar la orden actual
   const order = currentOrder?.id === orderId ? currentOrder : orders.find(o => o.id === orderId);
 
@@ -87,19 +87,19 @@ const OrderTrackingScreen = () => {
 
   const getEstimatedTime = () => {
     if (!order) return '';
-    
+
     const now = new Date();
     const estimated = new Date(order.estimatedDeliveryTime);
     const diffMinutes = Math.max(0, Math.floor((estimated - now) / (1000 * 60)));
-    
+
     if (order.status === ORDER_STATUS.DELIVERED) {
       return 'Entregado';
     }
-    
+
     if (diffMinutes === 0) {
       return 'Llegando pronto';
     }
-    
+
     return `${diffMinutes} min aprox.`;
   };
 
@@ -123,17 +123,15 @@ const OrderTrackingScreen = () => {
   };
 
   const handleContactSupport = () => {
-    Alert.alert(
-      'Soporte',
-      'Funcionalidad de soporte en desarrollo',
-      [{ text: 'OK' }]
-    );
+    navigation.navigate('CustomerChatScreen');
   };
 
   const renderTrackingStep = (step, index, isLast) => {
     const isActive = order.status === step.status;
-    const isCompleted = order.trackingSteps.some(s => s.status === step.status);
-    
+    const trackingSteps = order.trackingSteps || [];
+    const isCompleted = trackingSteps.some(s => s.status === step.status);
+    const matchedStep = trackingSteps.find(s => s.status === step.status);
+
     return (
       <View key={step.status} style={styles.trackingStep}>
         <View style={styles.stepIndicator}>
@@ -156,7 +154,7 @@ const OrderTrackingScreen = () => {
             ]} />
           )}
         </View>
-        
+
         <View style={styles.stepContent}>
           <Text style={[
             styles.stepTitle,
@@ -164,9 +162,9 @@ const OrderTrackingScreen = () => {
           ]}>
             {step.description}
           </Text>
-          {isCompleted && order.trackingSteps.find(s => s.status === step.status) && (
+          {matchedStep && (
             <Text style={styles.stepTime}>
-              {new Date(order.trackingSteps.find(s => s.status === step.status).timestamp).toLocaleTimeString([], {
+              {new Date(matchedStep.timestamp).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit'
               })}
@@ -190,7 +188,7 @@ const OrderTrackingScreen = () => {
           <Text style={styles.headerTitle}>Seguimiento</Text>
           <View style={styles.placeholder} />
         </View>
-        
+
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#3498DB" />
           <Text style={styles.loadingText}>Cargando información del pedido...</Text>
@@ -226,7 +224,7 @@ const OrderTrackingScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
         showsVerticalScrollIndicator={false}
@@ -244,7 +242,7 @@ const OrderTrackingScreen = () => {
               </Text>
             </View>
           </View>
-          
+
           <View style={styles.orderInfo}>
             <Text style={styles.orderNumber}>Pedido #{order.id.slice(-8)}</Text>
             <Text style={styles.orderTime}>
@@ -265,9 +263,9 @@ const OrderTrackingScreen = () => {
         {/* Tracking Steps */}
         <View style={styles.trackingContainer}>
           <Text style={styles.sectionTitle}>Estado del pedido</Text>
-          
+
           <View style={styles.trackingSteps}>
-            {allSteps.map((step, index) => 
+            {allSteps.map((step, index) =>
               renderTrackingStep(step, index, index === allSteps.length - 1)
             )}
           </View>
@@ -276,7 +274,7 @@ const OrderTrackingScreen = () => {
         {/* Order Items */}
         <View style={styles.itemsContainer}>
           <Text style={styles.sectionTitle}>Productos ({order.items.length})</Text>
-          
+
           {order.items.map((item, index) => (
             <View key={index} style={styles.orderItem}>
               <Text style={styles.itemEmoji}>{item.product.image}</Text>
@@ -287,7 +285,7 @@ const OrderTrackingScreen = () => {
               <Text style={styles.itemPrice}>${item.totalPrice.toFixed(2)}</Text>
             </View>
           ))}
-          
+
           <View style={styles.orderSummary}>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Subtotal</Text>

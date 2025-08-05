@@ -31,14 +31,14 @@ const CheckoutScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
-  
+
   const user = useSelector(selectUser);
   const cartItems = useSelector(selectCartItems);
   const restaurant = useSelector(selectCartRestaurant);
   const total = useSelector(selectCartTotal);
   const specialInstructions = useSelector(selectSpecialInstructions);
   const isOrderLoading = useSelector(selectOrdersLoading);
-  
+
   const [selectedAddress, setSelectedAddress] = useState('current');
   const [customAddress, setCustomAddress] = useState('');
   const [selectedPayment, setSelectedPayment] = useState(PAYMENT_METHODS.CASH);
@@ -87,10 +87,10 @@ const CheckoutScreen = () => {
       icon: '💳'
     },
     {
-      id: PAYMENT_METHODS.DIGITAL_WALLET,
-      name: 'Billetera Digital',
-      description: 'PayPal, Apple Pay, etc.',
-      icon: '📱'
+      id: PAYMENT_METHODS.TRANSFER,
+      name: 'Transferencia bancaria',
+      description: 'Transferencia con comprobante',
+      icon: '🏦'
     }
   ];
 
@@ -146,13 +146,13 @@ const CheckoutScreen = () => {
 
     try {
       const result = await dispatch(createOrder(orderData)).unwrap();
-      
+
       // Limpiar carrito
       dispatch(clearCart());
-      
+
       // Navegar a tracking
       navigation.replace('OrderTracking', { orderId: result.id });
-      
+
     } catch (error) {
       Alert.alert('Error', 'No se pudo procesar tu pedido. Intenta de nuevo.');
     }
@@ -192,6 +192,10 @@ const CheckoutScreen = () => {
       onPress={() => {
         setSelectedPayment(method.id);
         setShowPaymentModal(false);
+
+        if (method.id === PAYMENT_METHODS.TRANSFER) {
+          navigation.navigate('Transferencia');
+        }
       }}
     >
       <Text style={styles.optionIcon}>{method.icon}</Text>
@@ -219,7 +223,7 @@ const CheckoutScreen = () => {
           <Text style={styles.headerTitle}>Checkout</Text>
           <View style={styles.placeholder} />
         </View>
-        
+
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No hay productos para procesar</Text>
           <TouchableOpacity
@@ -247,7 +251,7 @@ const CheckoutScreen = () => {
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}
@@ -322,7 +326,7 @@ const CheckoutScreen = () => {
                 style={styles.cardInput}
                 placeholder="Número de tarjeta"
                 value={cardDetails.number}
-                onChangeText={(text) => setCardDetails(prev => ({...prev, number: text}))}
+                onChangeText={(text) => setCardDetails(prev => ({ ...prev, number: text }))}
                 keyboardType="numeric"
                 maxLength={19}
               />
@@ -331,7 +335,7 @@ const CheckoutScreen = () => {
                   style={[styles.cardInput, styles.cardInputHalf]}
                   placeholder="MM/AA"
                   value={cardDetails.expiry}
-                  onChangeText={(text) => setCardDetails(prev => ({...prev, expiry: text}))}
+                  onChangeText={(text) => setCardDetails(prev => ({ ...prev, expiry: text }))}
                   keyboardType="numeric"
                   maxLength={5}
                 />
@@ -339,7 +343,7 @@ const CheckoutScreen = () => {
                   style={[styles.cardInput, styles.cardInputHalf]}
                   placeholder="CVV"
                   value={cardDetails.cvv}
-                  onChangeText={(text) => setCardDetails(prev => ({...prev, cvv: text}))}
+                  onChangeText={(text) => setCardDetails(prev => ({ ...prev, cvv: text }))}
                   keyboardType="numeric"
                   maxLength={4}
                   secureTextEntry
@@ -349,7 +353,7 @@ const CheckoutScreen = () => {
                 style={styles.cardInput}
                 placeholder="Nombre del titular"
                 value={cardDetails.name}
-                onChangeText={(text) => setCardDetails(prev => ({...prev, name: text}))}
+                onChangeText={(text) => setCardDetails(prev => ({ ...prev, name: text }))}
                 autoCapitalize="words"
               />
             </View>
@@ -402,10 +406,10 @@ const CheckoutScreen = () => {
                 <Text style={styles.closeButtonText}>✕</Text>
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.modalScroll}>
               {savedAddresses.map(renderAddressOption)}
-              
+
               <View style={styles.customAddressSection}>
                 <Text style={styles.customAddressTitle}>Dirección personalizada</Text>
                 <TextInput
@@ -464,7 +468,7 @@ const CheckoutScreen = () => {
                 <Text style={styles.closeButtonText}>✕</Text>
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.modalScroll}>
               {paymentMethods.map(renderPaymentOption)}
             </ScrollView>
